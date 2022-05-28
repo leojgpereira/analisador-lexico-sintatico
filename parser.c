@@ -117,7 +117,7 @@ void Function_(){
       | epsilon
 */
 void B(){
-  if(lookahead==ID || lookahead==WHILE || lookahead==ABRE_CHAVES){
+  if(lookahead==ID || lookahead==WHILE || lookahead==ABRE_CHAVES || lookahead==INT || lookahead==DOUBLE || lookahead==FLOAT || lookahead==CHAR){
     C();
     B();
   }
@@ -126,27 +126,65 @@ void B(){
  C -> id = E ; 
       | while (E) C 
       | { B }
+      | INT id C_ ;
+      | DOUBLE id C_ ;
+      | FLOAT id C_ ;
+      | CHAR id C_ ;
 */
 void C(){
-   if(lookahead==ID){ //id = E ;
+  if(lookahead==INT) {
+    match(INT);
+    match(ID);
+    C_();
+    match(PONTO_VIRG);
+  }
+  else if(lookahead==FLOAT) {
+    match(FLOAT);
+    match(ID);
+    C_();
+    match(PONTO_VIRG);
+  }
+  else if(lookahead==DOUBLE) {
+    match(DOUBLE);
+    match(ID);
+    C_();
+    match(PONTO_VIRG);
+  }
+  else if(lookahead==CHAR) {
+    match(CHAR);
+    match(ID);
+    C_();
+    match(PONTO_VIRG);
+  }
+  else if(lookahead==ID){ //id = E ;
     match(ID);
     match(OP_ATRIB);
     E();
     match(PONTO_VIRG);
-  }
-  else if(lookahead==WHILE){
+  } else if(lookahead==WHILE){
     match(WHILE);
     match(ABRE_PARENT);
     E();
     match(FECHA_PARENT);
     C();
-  }
-  else {
+  } else {
     match(ABRE_CHAVES);
     B();
     match(FECHA_CHAVES);
   }
 }
+
+// C_ -> VIRG ID
+//    | C_
+//    | epsilon
+void C_() {
+  if(lookahead==VIRG) {
+    match(VIRG);
+    match(ID);
+    C_();
+  }
+}
+
 // E-> T E_
 void E(){
   T();
