@@ -189,9 +189,22 @@ int lex()
       if(!isalpha(c) && !isdigit(c)){
         ungetc(c,fin);
         lexema[--ilexema]='\0';
+        char index = isKeyword(lexema);
+        if(index == 9 || index == 1 || index == 4 || index == 6) {
+          estado_atual = 8;
+        }else {
+          return index;
+        }
+      }
+      break;  
+    case 8:
+      if(c == '*') {
+        return OP_PONT;
+      } else {
+        lexema[--ilexema]='\0';
         return (isKeyword(lexema));
       }
-      break;     
+      break;   
     }    
   } while(!feof(fin));
   if(estado_atual==0){ /* fim de arquivo */
