@@ -25,7 +25,7 @@ char *keywords[] = { /* palavras reservadas da linguagem */
 
 char *terminalName[] = { /* nome dos terminais aceitos pelo automato */
   "break", "char", "default", "do", "double", "else", "float","for", "if", "int", "main", "return", "struct", "switch", "void", "while", "id", "num", "OP_ATRIB", "OP_ADIT", "OP_MULT", "OP_REL", "ABRE_PARENT", "FECHA_PARENT", "PONTO_VIRG", 
-  "VIRG", "ABRE_CHAVES", "FECHA_CHAVES", "CARACTER", "STRING", "OP_BIT_A_BIT_AND", "OP_BIT_A_BIT_OR", "OP_LOGICO", "OP_CASE", "ABRE_COLC", "FECHA_COLC", "PONTO", "OP_MINUS", "OP_MINUSMINUS", "OP_PONT", "OP_PLUSPLUS", "DOT_DOT","OP_NOT","OP_DIV", "FIM"
+  "VIRG", "ABRE_CHAVES", "FECHA_CHAVES", "CARACTER", "STRING", "OP_BIT_A_BIT_AND", "OP_BIT_A_BIT_OR", "OP_LOGICO", "OP_CASE", "ABRE_COLC", "FECHA_COLC", "PONTO", "OP_MINUS", "OP_MINUSMINUS", "OP_PONT", "OP_PLUSPLUS", "DOT_DOT","OP_NOT","OP_DIV", "FIM", "INT_PONT", "DOUBLE_PONT", "FLOAT_PONT", "CHAR_PONT"
 };
 
 
@@ -62,7 +62,7 @@ char isKeyword (char *s)
 *********************************************************************************/
 int lex()
 {
-  int estado_atual, prox_estado, next, t;
+  int estado_atual, prox_estado, next, t, pointer_type_index;
 
   ilexema =0;
   estado_atual=0;
@@ -104,6 +104,8 @@ int lex()
         return DOT_DOT;
       case ';':
         return PONTO_VIRG;
+      case ',':
+        return VIRG;
       case '<':
       case '>':
         estado_atual = 3;
@@ -190,7 +192,8 @@ int lex()
         ungetc(c,fin);
         lexema[--ilexema]='\0';
         char index = isKeyword(lexema);
-        if(index == 9 || index == 1 || index == 4 || index == 6) {
+        if(index == 1 || index == 4 || index == 6 || index == 9) {
+          pointer_type_index = index;
           estado_atual = 8;
         }else {
           return index;
@@ -199,7 +202,15 @@ int lex()
       break;  
     case 8:
       if(c == '*') {
-        return OP_PONT;
+        if(pointer_type_index == 1) {
+          return CHAR_PONT;
+        } else if (pointer_type_index == 4) {
+          return DOUBLE_PONT;
+        } else if (pointer_type_index == 6) {
+          return FLOAT_PONT;
+        } else {
+          return INT_PONT;
+        }
       } else {
         lexema[--ilexema]='\0';
         return (isKeyword(lexema));
