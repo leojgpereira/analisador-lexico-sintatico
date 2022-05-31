@@ -15,7 +15,6 @@ void Type();
 void Function_();
 void B();
 void C();
-void C_();
 void E();
 void T();
 void F();
