@@ -91,6 +91,23 @@ void Type(){
   }
 }
 
+/* Type_   -> INT
+            | FLOAT
+            | DOUBLE
+            | CHAR          
+*/
+void Type_() {
+  if(lookahead==INT) {
+    match(INT);
+  } else if(lookahead==FLOAT) {
+    match(FLOAT);
+  } else if(lookahead==DOUBLE) {
+    match(DOUBLE);
+  } else {
+    match(CHAR);
+  }
+}
+
 /* Function_ -> main() { B } 
             | id() { B }
 */
@@ -117,46 +134,27 @@ void Function_(){
       | epsilon
 */
 void B(){
-  if(lookahead==ID || lookahead==WHILE || lookahead==ABRE_CHAVES || lookahead==INT || lookahead==DOUBLE || lookahead==FLOAT || lookahead==CHAR){
+  if(lookahead==ID || lookahead==WHILE || lookahead==ABRE_CHAVES || lookahead==INT || lookahead==DOUBLE || lookahead==FLOAT || lookahead==CHAR || lookahead==OP_MULT){
     C();
     B();
   }
 }
 /*
- C -> id = E ; 
+C    -> id = E ; 
+      | *id = E;
       | while (E) C 
       | { B }
-      | INT id C_ ;
-      | DOUBLE id C_ ;
-      | FLOAT id C_ ;
-      | CHAR id C_ ;
+      | Type_ X id C_ ;
 */
 void C(){
-  if(lookahead==INT) {
-    match(INT);
+  if(lookahead==OP_MULT){ // * X id = E ;
+    match(OP_MULT);
+    X();
     match(ID);
-    C_();
+    match(OP_ATRIB);
+    E();
     match(PONTO_VIRG);
-  }
-  else if(lookahead==FLOAT) {
-    match(FLOAT);
-    match(ID);
-    C_();
-    match(PONTO_VIRG);
-  }
-  else if(lookahead==DOUBLE) {
-    match(DOUBLE);
-    match(ID);
-    C_();
-    match(PONTO_VIRG);
-  }
-  else if(lookahead==CHAR) {
-    match(CHAR);
-    match(ID);
-    C_();
-    match(PONTO_VIRG);
-  }
-  else if(lookahead==ID){ //id = E ;
+  } else if(lookahead==ID){ // id = E ;
     match(ID);
     match(OP_ATRIB);
     E();
@@ -167,10 +165,16 @@ void C(){
     E();
     match(FECHA_PARENT);
     C();
-  } else {
+  } else if(lookahead==ABRE_CHAVES) {
     match(ABRE_CHAVES);
     B();
     match(FECHA_CHAVES);
+  } else {
+    Type_();
+    X();
+    match(ID);
+    C_();
+    match(PONTO_VIRG);
   }
 }
 
@@ -180,8 +184,16 @@ void C(){
 void C_() {
   if(lookahead==VIRG) {
     match(VIRG);
+    X();
     match(ID);
     C_();
+  }
+}
+/* X -> *X | epsilon */
+void X() {
+  if(lookahead==OP_MULT) {
+    match(OP_MULT);
+    X();
   }
 }
 
@@ -217,19 +229,21 @@ void T_(){
  F -> (E) 
       | id 
       | num
+      | *X id
 */
 void F(){
   if(lookahead==ABRE_PARENT){
     match(ABRE_PARENT);
     E();
     match(FECHA_PARENT);
-  }
-  else{
-    if(lookahead==ID){
+  } else if(lookahead==ID){
       match(ID);
-    }
-    else
-      match(NUM);
+  } else if(lookahead==NUM) {
+    match(NUM);
+  } else {
+    match(OP_MULT);
+    X();
+    match(ID);
   }
 }
 

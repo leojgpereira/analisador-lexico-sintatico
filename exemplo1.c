@@ -1,6 +1,22 @@
 int f()
 {
-  a = 10;
+  
+  int a;
+  float b;
+  double c;
+  char d;
+
+  
+  int *a;
+  float **b;
+  double *c;
+  char *d;
+
+  
+  *a = 5;
+  b = *a + 6;
+  c = *a * *b;
+  d = 20 + **c;
 
   b = 3;
 }
