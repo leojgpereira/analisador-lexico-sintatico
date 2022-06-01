@@ -178,8 +178,7 @@ void C(){
   }
 }
 
-// C_ -> VIRG ID
-//    | C_
+// C_ -> VIRG ID C_
 //    | epsilon
 void C_() {
   if(lookahead==VIRG) {
